@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,15 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function Submit() {
-  const { pending } = useFormStatus();
-  return (
-    <Button className="w-full" type="submit" disabled={pending}>
-      {pending ? "Signing up..." : "Sign up"}
-    </Button>
-  );
-}
-
 type Props = {
   action: (
     _: unknown,
@@ -31,7 +21,7 @@ type Props = {
 };
 
 export function SignUpForm({ action }: Props) {
-  const [state, formAction] = useActionState(action, null);
+  const [state, formAction, isPending] = useActionState(action, null);
   useEffect(() => {
     if (state) {
       alert(state.message);
@@ -82,7 +72,9 @@ export function SignUpForm({ action }: Props) {
           </div>
         </CardContent>
         <CardFooter>
-          <Submit />
+          <Button className="w-full" type="submit" disabled={isPending}>
+            {isPending ? "Signing up..." : "Sign up"}
+          </Button>
         </CardFooter>
       </form>
     </Card>
