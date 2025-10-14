@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +23,20 @@ function Submit() {
   );
 }
 
-export function SignUpForm({
-  action,
-}: {
-  action: (formData: FormData) => Promise<void>;
-}) {
+type Props = {
+  action: (
+    _: unknown,
+    formData: FormData,
+  ) => Promise<{ message: string; formData: FormData }>;
+};
+
+export function SignUpForm({ action }: Props) {
+  const [state, formAction] = useActionState(action, null);
+  useEffect(() => {
+    if (state) {
+      alert(state.message);
+    }
+  }, [state]);
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
@@ -35,7 +45,7 @@ export function SignUpForm({
           Enter your name, email, and password to create your account.
         </CardDescription>
       </CardHeader>
-      <form action={action}>
+      <form action={formAction}>
         <CardContent className="space-y-4 pb-6">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
@@ -45,6 +55,7 @@ export function SignUpForm({
               type="text"
               required
               placeholder="Enter your name"
+              defaultValue={state?.formData.get("name")?.toString()}
             />
           </div>
           <div className="space-y-2">
@@ -55,6 +66,7 @@ export function SignUpForm({
               type="email"
               required
               placeholder="Enter your email"
+              defaultValue={state?.formData.get("email")?.toString()}
             />
           </div>
           <div className="space-y-2">
@@ -65,6 +77,7 @@ export function SignUpForm({
               type="password"
               required
               placeholder="Enter your password"
+              defaultValue={state?.formData.get("password")?.toString()}
             />
           </div>
         </CardContent>

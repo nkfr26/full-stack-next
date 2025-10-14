@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
+    "@praha/byethrow": "^0.7.2",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "better-auth": "^1.3.27",
+    "better-auth-localization": "^2.1.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
