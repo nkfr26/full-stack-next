@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,21 +12,20 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useForm } from "@/lib/react-server-actions-form";
+import { defaultValues } from "../_lib/utils";
+import { createUser } from "../actions";
 
-type Props = {
-  action: (
-    _: unknown,
-    formData: FormData,
-  ) => Promise<{ message: string; formData: FormData }>;
-};
-
-export function SignUpForm({ action }: Props) {
-  const [state, formAction, isPending] = useActionState(action, null);
+export function SignUpForm() {
+  const [formState, formAction, pending] = useForm({
+    action: createUser,
+    defaultValues,
+  });
   useEffect(() => {
-    if (state) {
-      alert(state.message);
+    if (formState.state === "other-error") {
+      alert(formState.error);
     }
-  }, [state]);
+  }, [formState]);
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
@@ -45,7 +44,7 @@ export function SignUpForm({ action }: Props) {
               type="text"
               required
               placeholder="Enter your name"
-              defaultValue={state?.formData.get("name")?.toString()}
+              defaultValue={formState.values.name}
             />
           </div>
           <div className="space-y-2">
@@ -56,7 +55,7 @@ export function SignUpForm({ action }: Props) {
               type="email"
               required
               placeholder="Enter your email"
-              defaultValue={state?.formData.get("email")?.toString()}
+              defaultValue={formState.values.email}
             />
           </div>
           <div className="space-y-2">
@@ -67,13 +66,13 @@ export function SignUpForm({ action }: Props) {
               type="password"
               required
               placeholder="Enter your password"
-              defaultValue={state?.formData.get("password")?.toString()}
+              defaultValue={formState.values.password}
             />
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full" type="submit" disabled={isPending}>
-            {isPending ? "Signing up..." : "Sign up"}
+          <Button className="w-full" type="submit" disabled={pending}>
+            {pending ? "Signing up..." : "Sign up"}
           </Button>
         </CardFooter>
       </form>
