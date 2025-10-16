@@ -45,7 +45,7 @@ export const createUser = async (
     return {
       state: "other-error" as const,
       values,
-      error: result.error.message,
+      errors: result.error.message,
     };
   }
 

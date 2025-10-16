@@ -1,5 +1,6 @@
 "use client";
 
+import Form from "next/form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useForm } from "@/lib/react-server-actions-form";
 import { defaultValues } from "../_lib/utils";
 import { createUser } from "../actions";
@@ -23,59 +29,96 @@ export function SignUpForm() {
   });
   useEffect(() => {
     if (formState.state === "other-error") {
-      alert(formState.error);
+      alert(formState.errors);
     }
   }, [formState]);
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Sign up</CardTitle>
-        <CardDescription>
-          Enter your name, email, and password to create your account.
-        </CardDescription>
-      </CardHeader>
-      <form action={formAction}>
-        <CardContent className="space-y-4 pb-6">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              required
-              placeholder="Enter your name"
-              defaultValue={formState.values.name}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="Enter your email"
-              defaultValue={formState.values.email}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              required
-              placeholder="Enter your password"
-              defaultValue={formState.values.password}
-            />
-          </div>
+    <Form action={formAction} className="w-full max-w-md mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Sign up</CardTitle>
+          <CardDescription>
+            Enter your name, email, and password to create your account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className="gap-6">
+            <Field
+              className="gap-2"
+              data-invalid={
+                formState.state === "field-error" && !!formState.errors.name
+              }
+            >
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="Enter your name"
+                defaultValue={formState.values.name}
+                aria-invalid={
+                  formState.state === "field-error" && !!formState.errors.name
+                }
+              />
+              {formState.state === "field-error" && formState.errors.name && (
+                <FieldError>{formState.errors.name[0]}</FieldError>
+              )}
+            </Field>
+            <Field
+              className="gap-2"
+              data-invalid={
+                formState.state === "field-error" && !!formState.errors.email
+              }
+            >
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="Enter your email"
+                defaultValue={formState.values.email}
+                aria-invalid={
+                  formState.state === "field-error" && !!formState.errors.email
+                }
+              />
+              {formState.state === "field-error" && formState.errors.email && (
+                <FieldError>{formState.errors.email[0]}</FieldError>
+              )}
+            </Field>
+            <Field
+              className="gap-2"
+              data-invalid={
+                formState.state === "field-error" && !!formState.errors.password
+              }
+            >
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Enter your password"
+                defaultValue={formState.values.password}
+                aria-invalid={
+                  formState.state === "field-error" &&
+                  !!formState.errors.password
+                }
+              />
+              {formState.state === "field-error" &&
+                formState.errors.password && (
+                  <FieldError>{formState.errors.password[0]}</FieldError>
+                )}
+            </Field>
+          </FieldGroup>
         </CardContent>
         <CardFooter>
           <Button className="w-full" type="submit" disabled={pending}>
             {pending ? "Signing up..." : "Sign up"}
           </Button>
         </CardFooter>
-      </form>
-    </Card>
+      </Card>
+    </Form>
   );
 }

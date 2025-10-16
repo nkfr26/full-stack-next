@@ -11,7 +11,7 @@ export type FormState<T extends StandardSchemaV1, U = string> =
   | {
       state: "other-error";
       values: StandardSchemaV1.InferOutput<T>;
-      error: U;
+      errors: U;
     };
 
 export const useForm = <T extends StandardSchemaV1, U = string>({
