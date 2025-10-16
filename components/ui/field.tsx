@@ -71,9 +71,7 @@ const fieldVariants = cva(
         ],
       },
     },
-    defaultVariants: {
-      orientation: "vertical",
-    },
+    defaultVariants: { orientation: "vertical" },
   },
 );
 
@@ -157,9 +155,7 @@ function FieldSeparator({
   children,
   className,
   ...props
-}: React.ComponentProps<"div"> & {
-  children?: React.ReactNode;
-}) {
+}: React.ComponentProps<"div"> & { children?: React.ReactNode }) {
   return (
     <div
       data-slot="field-separator"

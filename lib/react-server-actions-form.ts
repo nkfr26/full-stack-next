@@ -17,10 +17,19 @@ export type FormState<T extends StandardSchemaV1, U = string> =
 export const useForm = <T extends StandardSchemaV1, U = string>({
   action,
   defaultValues,
+  permalink,
 }: {
   action: (
     prevState: FormState<T, U>,
     formData: FormData,
   ) => Promise<FormState<T, U>>;
   defaultValues: StandardSchemaV1.InferOutput<T>;
-}) => useActionState(action, { state: "init", values: defaultValues });
+  permalink?: string;
+}) => {
+  const [state, dispatch, isPending] = useActionState(
+    action,
+    { state: "init", values: defaultValues },
+    permalink,
+  );
+  return { state, dispatch, isPending };
+};

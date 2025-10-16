@@ -7,17 +7,11 @@ import { auth } from "@/lib/auth";
 import type { FormState } from "@/lib/react-server-actions-form";
 import { formSchema } from "./_lib/utils";
 
-type Args = {
-  name: string;
-  email: string;
-  password: string;
-};
+type Args = { name: string; email: string; password: string };
 
 const signUpEmail = R.try({
   try: ({ name, email, password }: Args) =>
-    auth.api.signUpEmail({
-      body: { name, email, password },
-    }),
+    auth.api.signUpEmail({ body: { name, email, password } }),
   catch: (error) => error as Error,
 });
 

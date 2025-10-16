@@ -11,8 +11,6 @@ export const auth = betterAuth({
     provider: "sqlite",
     schema: { user, session, account, verification },
   }),
-  emailAndPassword: {
-    enabled: true,
-  },
+  emailAndPassword: { enabled: true },
   plugins: [nextCookies(), admin(), localization({ defaultLocale: "ja-JP" })],
 });

@@ -23,17 +23,17 @@ import { defaultValues } from "../_lib/utils";
 import { createUser } from "../actions";
 
 export function SignUpForm() {
-  const [formState, formAction, pending] = useForm({
+  const { state, dispatch, isPending } = useForm({
     action: createUser,
     defaultValues,
   });
   useEffect(() => {
-    if (formState.state === "other-error") {
-      alert(formState.errors);
+    if (state.state === "other-error") {
+      alert(state.errors);
     }
-  }, [formState]);
+  }, [state]);
   return (
-    <Form action={formAction} className="w-full max-w-md mx-auto">
+    <Form action={dispatch} className="w-full max-w-md mx-auto">
       <Card>
         <CardHeader>
           <CardTitle>Sign up</CardTitle>
@@ -46,7 +46,7 @@ export function SignUpForm() {
             <Field
               className="gap-2"
               data-invalid={
-                formState.state === "field-error" && !!formState.errors.name
+                state.state === "field-error" && !!state.errors.name
               }
             >
               <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -56,19 +56,19 @@ export function SignUpForm() {
                 type="text"
                 required
                 placeholder="Enter your name"
-                defaultValue={formState.values.name}
+                defaultValue={state.values.name}
                 aria-invalid={
-                  formState.state === "field-error" && !!formState.errors.name
+                  state.state === "field-error" && !!state.errors.name
                 }
               />
-              {formState.state === "field-error" && formState.errors.name && (
-                <FieldError>{formState.errors.name[0]}</FieldError>
+              {state.state === "field-error" && state.errors.name && (
+                <FieldError>{state.errors.name[0]}</FieldError>
               )}
             </Field>
             <Field
               className="gap-2"
               data-invalid={
-                formState.state === "field-error" && !!formState.errors.email
+                state.state === "field-error" && !!state.errors.email
               }
             >
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -78,19 +78,19 @@ export function SignUpForm() {
                 type="email"
                 required
                 placeholder="Enter your email"
-                defaultValue={formState.values.email}
+                defaultValue={state.values.email}
                 aria-invalid={
-                  formState.state === "field-error" && !!formState.errors.email
+                  state.state === "field-error" && !!state.errors.email
                 }
               />
-              {formState.state === "field-error" && formState.errors.email && (
-                <FieldError>{formState.errors.email[0]}</FieldError>
+              {state.state === "field-error" && state.errors.email && (
+                <FieldError>{state.errors.email[0]}</FieldError>
               )}
             </Field>
             <Field
               className="gap-2"
               data-invalid={
-                formState.state === "field-error" && !!formState.errors.password
+                state.state === "field-error" && !!state.errors.password
               }
             >
               <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -100,22 +100,20 @@ export function SignUpForm() {
                 type="password"
                 required
                 placeholder="Enter your password"
-                defaultValue={formState.values.password}
+                defaultValue={state.values.password}
                 aria-invalid={
-                  formState.state === "field-error" &&
-                  !!formState.errors.password
+                  state.state === "field-error" && !!state.errors.password
                 }
               />
-              {formState.state === "field-error" &&
-                formState.errors.password && (
-                  <FieldError>{formState.errors.password[0]}</FieldError>
-                )}
+              {state.state === "field-error" && state.errors.password && (
+                <FieldError>{state.errors.password[0]}</FieldError>
+              )}
             </Field>
           </FieldGroup>
         </CardContent>
         <CardFooter>
-          <Button className="w-full" type="submit" disabled={pending}>
-            {pending ? "Signing up..." : "Sign up"}
+          <Button className="w-full" type="submit" disabled={isPending}>
+            {isPending ? "Signing up..." : "Sign up"}
           </Button>
         </CardFooter>
       </Card>
