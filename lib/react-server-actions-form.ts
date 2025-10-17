@@ -1,35 +1,88 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { useActionState } from "react";
+import type React from "react";
+import * as z from "zod";
 
-export type FormState<T extends StandardSchemaV1, U = string> =
-  | { state: "init" | "success"; values: StandardSchemaV1.InferOutput<T> }
-  | {
-      state: "field-error";
-      values: StandardSchemaV1.InferOutput<T>;
-      errors: Partial<Record<keyof StandardSchemaV1.InferOutput<T>, string[]>>;
-    }
-  | {
-      state: "other-error";
-      values: StandardSchemaV1.InferOutput<T>;
-      errors: U;
-    };
+type Fields<T extends z.ZodObject> = {
+  [K in keyof z.infer<T>]:
+    | { invalid: false }
+    | { invalid: true; errors: { message: string }[] };
+};
 
-export const useForm = <T extends StandardSchemaV1, U = string>({
+type SafeParseResult<T extends z.ZodObject> = {
+  success: boolean;
+  values: z.infer<T>;
+  fields: Fields<T>;
+};
+
+export type FormState<
+  T extends z.ZodObject,
+  U = { message: string },
+> = SafeParseResult<T> & { customError?: U };
+
+const createDefaultFields = <T extends z.ZodObject>(
+  keys: (keyof z.infer<T>)[],
+): Fields<T> =>
+  keys.reduce(
+    (acc, key) => {
+      acc[key] = { invalid: false };
+      return acc;
+    },
+    {} as Fields<T>,
+  );
+
+export const useForm = <T extends z.ZodObject, U>({
+  useActionState,
   action,
   defaultValues,
   permalink,
 }: {
+  useActionState: typeof React.useActionState;
   action: (
     prevState: FormState<T, U>,
     formData: FormData,
   ) => Promise<FormState<T, U>>;
-  defaultValues: StandardSchemaV1.InferOutput<T>;
+  defaultValues: z.infer<T>;
   permalink?: string;
 }) => {
-  const [state, dispatch, isPending] = useActionState(
+  const keys = Object.keys(defaultValues) as (keyof typeof defaultValues)[];
+  const [state, formAction, isPending] = useActionState(
     action,
-    { state: "init", values: defaultValues },
+    {
+      success: false,
+      values: defaultValues,
+      fields: createDefaultFields<T>(keys),
+    },
     permalink,
   );
-  return { state, dispatch, isPending };
+  return { state, formAction, isPending };
+};
+
+export const safeParse = <T extends z.ZodObject>(
+  schema: T,
+  data: z.infer<T>,
+): SafeParseResult<T> => {
+  const result = schema.safeParse(data);
+  const keys = Object.keys(data) as (keyof typeof data)[];
+
+  if (!result.success) {
+    const fieldErrors = z.flattenError(result.error).fieldErrors;
+    const fields = keys.reduce(
+      (acc, key) => {
+        const fieldError = fieldErrors[key];
+        acc[key] = fieldError
+          ? {
+              invalid: true,
+              errors: fieldError.map((message) => ({ message })),
+            }
+          : { invalid: false };
+        return acc;
+      },
+      {} as Fields<T>,
+    );
+    return { success: false, values: data, fields };
+  }
+  return {
+    success: true,
+    values: result.data,
+    fields: createDefaultFields<T>(keys),
+  };
 };
