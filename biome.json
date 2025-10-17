@@ -15,7 +15,8 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "suspicious": { "noUnknownAtRules": "off" }
+      "suspicious": { "noUnknownAtRules": "off" },
+      "nursery": { "useSortedClasses": "error" }
     },
     "domains": { "next": "recommended", "react": "recommended" }
   },
