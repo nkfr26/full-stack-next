@@ -16,7 +16,7 @@ const signUpEmail = R.try({
 });
 
 export async function createUser(
-  _prevState: FormState<typeof formSchema>,
+  _: unknown,
   formData: FormData,
 ): Promise<FormState<typeof formSchema>> {
   const values: z.infer<typeof formSchema> = {
@@ -39,6 +39,6 @@ export async function createUser(
     };
   }
 
-  return redirect("/");
+  redirect("/");
   // return { ...parsed, values: defaultValues };
 }
