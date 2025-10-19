@@ -9,16 +9,12 @@ type Fields<T extends z.ZodObject> = {
     | { invalid: true; errors: FieldError[] };
 };
 
-type SafeParseResult<T extends z.ZodObject> = {
+export type FormState<T extends z.ZodObject, U = FieldError> = {
   success: boolean;
   values: z.infer<T>;
   fields: Fields<T>;
+  customError?: U;
 };
-
-export type FormState<
-  T extends z.ZodObject,
-  U = FieldError,
-> = SafeParseResult<T> & { customError?: U };
 
 const createDefaultFields = <T extends z.ZodObject>(
   keys: (keyof z.infer<T>)[],
@@ -61,7 +57,7 @@ export const useForm = <T extends z.ZodObject, U>({
 export const safeParse = <T extends z.ZodObject>(
   schema: T,
   data: z.infer<T>,
-): SafeParseResult<T> => {
+): FormState<T, never> => {
   const result = schema.safeParse(data);
   const keys = Object.keys(data) as (keyof typeof data)[];
 

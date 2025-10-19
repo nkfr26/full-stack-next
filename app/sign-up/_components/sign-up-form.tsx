@@ -20,12 +20,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "@/lib/react-server-actions-form";
 import { defaultValues } from "../_lib/utils";
-import { createUser } from "../actions";
+import { createUser as action } from "../actions";
 
 export function SignUpForm() {
   const { state, formAction, isPending } = useForm({
     useActionState,
-    action: createUser,
+    action,
     defaultValues,
   });
   useEffect(() => {
