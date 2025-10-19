@@ -9,7 +9,7 @@ type Fields<T extends z.ZodObject> = {
     | { invalid: true; errors: FieldError[] };
 };
 
-export type FormState<T extends z.ZodObject, U = FieldError> = {
+type FormState<T extends z.ZodObject, U = FieldError> = {
   success: boolean;
   values: z.infer<T>;
   fields: Fields<T>;
@@ -27,7 +27,7 @@ const createDefaultFields = <T extends z.ZodObject>(
     {} as Fields<T>,
   );
 
-export const useForm = <T extends z.ZodObject, U>({
+const useForm = <T extends z.ZodObject, U>({
   useActionState,
   action,
   defaultValues,
@@ -84,3 +84,29 @@ export const safeParse = <T extends z.ZodObject>(
     fields: createDefaultFields<T>(keys),
   };
 };
+
+const parseAndThen = async <T extends z.ZodObject, U>(
+  schema: T,
+  data: z.infer<T>,
+  then: (parsed: FormState<T, never>) => Promise<FormState<T, U>>,
+) => {
+  const parsed = safeParse(schema, data);
+  if (!parsed.success) {
+    return parsed;
+  }
+  return then(parsed);
+};
+
+const fail = <T extends z.ZodObject, U>(
+  parsed: FormState<T, never>,
+  overrides: Partial<FormState<T, U>>,
+): FormState<T, U> => {
+  return { ...parsed, ...overrides, success: false };
+};
+
+const invalid = (messages: string[]) => ({
+  invalid: true,
+  errors: messages.map((message) => ({ message })),
+});
+
+export { type FormState, useForm, parseAndThen, fail, invalid };
