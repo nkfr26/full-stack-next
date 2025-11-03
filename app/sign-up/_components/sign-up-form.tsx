@@ -30,9 +30,9 @@ export function SignUpForm() {
   });
   useEffect(() => {
     if (state.customError !== undefined) {
-      alert(state.customError.message);
+      alert(state.customError);
     }
-  }, [state]);
+  }, [state.customError]);
   return (
     <Form action={formAction} className="mx-auto w-full max-w-md">
       <Card>

@@ -1,15 +1,13 @@
 import type React from "react";
 import * as z from "zod";
 
-type FieldError = { message: string };
-
 type Fields<T extends z.ZodObject> = {
   [K in keyof z.infer<T>]:
     | { invalid: false }
-    | { invalid: true; errors: FieldError[] };
+    | { invalid: true; errors: string[] };
 };
 
-type FormState<T extends z.ZodObject, U = FieldError> = {
+type FormState<T extends z.ZodObject, U = string> = {
   success: boolean;
   values: z.infer<T>;
   fields: Fields<T>;
@@ -67,10 +65,7 @@ export const safeParse = <T extends z.ZodObject>(
       (acc, key) => {
         const fieldError = fieldErrors[key];
         acc[key] = fieldError?.length
-          ? {
-              invalid: true,
-              errors: fieldError.map((message) => ({ message })),
-            }
+          ? { invalid: true, errors: fieldError.map((message) => message) }
           : { invalid: false };
         return acc;
       },
@@ -104,9 +99,4 @@ const fail = <T extends z.ZodObject, U>(
   return { ...parsed, ...overrides, success: false };
 };
 
-const invalid = (messages: string[]) => ({
-  invalid: true,
-  errors: messages.map((message) => ({ message })),
-});
-
-export { type FormState, useForm, parseAndThen, fail, invalid };
+export { type FormState, useForm, parseAndThen, fail };

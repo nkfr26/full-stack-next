@@ -7,7 +7,6 @@ import { auth } from "@/lib/auth";
 import {
   type FormState,
   fail,
-  invalid,
   parseAndThen,
 } from "@/lib/react-server-actions-form";
 import { formSchema } from "./_lib/utils";
@@ -34,10 +33,13 @@ export async function createUser(
     const result = await signUpEmail(parsed.values);
     if (R.isFailure(result)) {
       return fail(parsed, {
-        customError: { message: result.error.message },
+        customError: result.error.message,
         fields: {
           ...parsed.fields,
-          email: invalid([result.error.message, result.error.message]),
+          email: {
+            invalid: true,
+            errors: [result.error.message, result.error.message],
+          },
         },
       });
     }
